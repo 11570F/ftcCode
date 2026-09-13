@@ -1,3 +1,26 @@
+/*   MIT License
+ *   Copyright (c) [2026] [Base 10 Assets, LLC]
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a copy
+ *   of this software and associated documentation files (the "Software"), to deal
+ *   in the Software without restriction, including without limitation the rights
+ *   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *   copies of the Software, and to permit persons to whom the Software is
+ *   furnished to do so, subject to the following conditions:
+
+ *   The above copyright notice and this permission notice shall be included in all
+ *   copies or substantial portions of the Software.
+
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *   SOFTWARE.
+ */
+
+
 package org.firstinspires.ftc.teamcode;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
@@ -56,7 +79,7 @@ public class MainTeleop extends OpMode {
      * in the launch() function to only run the windmill servo when the motor is spinning fast
      * enough to make a successful throw.
      */
-    public final int LAUNCHER_TARGET_VELOCITY = 6500;
+    public final int LAUNCHER_TARGET_VELOCITY = 1405;
     public final int LAUNCHER_MIN_VELOCITY = 1200;
 
     /*
@@ -87,10 +110,10 @@ public class MainTeleop extends OpMode {
         frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
         backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
          
-        frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRightMotor.setDirection(DcMotor.Direction.FORWARD);
+        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
+        backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         
         intake = hardwareMap.get(DcMotor.class, "intake");
         launcher = hardwareMap.get(DcMotorEx.class, "launcher");
@@ -122,7 +145,7 @@ public class MainTeleop extends OpMode {
          */
         leftIntakeServo.setPower(0);
         rightIntakeServo.setPower(0);
-        windmillServo.setPower(0);
+        windmillServo.setPosition(0.0);
 
         /*
          * Much like our drivetrain motors, we set the right intake servo to reverse so that both
@@ -162,7 +185,7 @@ public class MainTeleop extends OpMode {
         double rx = gamepad1.right_stick_x;
         
         // Set the intake power variable to equal the right trigger, minus the left trigger.
-        intakePower = gamepad1.right_trigger - gamepad1.left_trigger;
+        intakePower = gamepad2.right_trigger - gamepad2.left_trigger;
 
         /*
          * The launch() function handles setting motor velocity, and running the windmill servo
@@ -201,13 +224,6 @@ public class MainTeleop extends OpMode {
                 frontRightMotor.setPower(frontRightPower * 0.33);
                 backRightMotor.setPower(backRightPower * 0.33);
             }
-            else if (gamepad1.right_trigger > 0.1)
-            {
-                frontLeftMotor.setPower(frontLeftPower * gamepad1.right_trigger);
-                backLeftMotor.setPower(backLeftPower * gamepad1.right_trigger);
-                frontRightMotor.setPower(frontRightPower * gamepad1.right_trigger);
-                backRightMotor.setPower(backRightPower * gamepad1.right_trigger);
-            }
             else
             {
                 frontLeftMotor.setPower(frontLeftPower * 0.75);
@@ -234,7 +250,7 @@ public class MainTeleop extends OpMode {
          * holding down the right gamepad. If they are, then we want to start spinning up the launcher.
          * Otherwise, we start spinning the launcher down.
          */
-        if (gamepad1.a) {
+        if (gamepad1.a || gamepad2.a) {
             launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
         } else {
             launcher.setVelocity(0);
@@ -247,11 +263,10 @@ public class MainTeleop extends OpMode {
          * add some power to the intake power. This can sometimes help dislodge stuck elements from
          * inside the hopper.
          */
-        if (gamepad1.b) {
-            windmillServo.setPower(1);
-            intakePower += 0.5;
+        if (gamepad1.b || gamepad2.b) {
+            windmillServo.setPosition(windmillServo.position + 0.3); ;
         } else {
-            windmillServo.setPower(0);
+            windmillServo.setPower(90);
         }
     }
 
