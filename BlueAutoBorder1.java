@@ -60,10 +60,10 @@ public class BlueAutoBorder1 extends LinearOpMode {
         DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeftMotor");
         DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
         DcMotor backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
-        double frontLeftTarget;
-        double frontRightTarget;
-        double backLeftTarget;
-        double backRightTarget;
+        int frontLeftTarget;
+        int frontRightTarget;
+        int backLeftTarget;
+        int backRightTarget;
         
         
         if (forward > 0)
@@ -71,15 +71,15 @@ public class BlueAutoBorder1 extends LinearOpMode {
             leftInches = Math.floor(forward * COUNTS_PER_INCH);
             rightInches = Math.floor(-forward * COUNTS_PER_INCH);
             
-            frontLeftTarget = Math.floor(frontLeftMotor.getCurrentPosition()) + Math.floor(leftInches * COUNTS_PER_INCH);
-            frontRightTarget = Math.floor(frontRightMotor.getCurrentPosition()) + Math.floor(rightInches * COUNTS_PER_INCH);
-            backLeftTarget = Math.floor(backLeftMotor.getCurrentPosition()) + Math.floor(leftInches * COUNTS_PER_INCH);
-            backRightTarget = Math.floor(backRightMotor.getCurrentPosition()) + Math.floor(rightInches * COUNTS_PER_INCH);
+            frontLeftTarget = (int) (frontLeftMotor.getCurrentPosition() + leftInches);
+            frontRightTarget = (int) (frontRightMotor.getCurrentPosition() + rightInches);
+            backLeftTarget = (int) (backLeftMotor.getCurrentPosition() + leftInches);
+            backRightTarget = (int) (backRightMotor.getCurrentPosition() + rightInches);
             
-            backLeftMotor.setTargetPosition((double) backLeftTarget);
-            backRightMotor.setTargetPosition((double) backRightTarget);
-            frontLeftMotor.setTargetPosition((double) frontLeftTarget);
-            frontRightMotor.setTargetPosition((double) frontRightTarget);
+            backLeftMotor.setTargetPosition(backLeftTarget);
+            backRightMotor.setTargetPosition(backRightTarget);
+            frontLeftMotor.setTargetPosition(frontLeftTarget);
+            frontRightMotor.setTargetPosition(frontRightTarget);
         }
         
         if (strafe > 0)
