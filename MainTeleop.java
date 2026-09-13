@@ -24,6 +24,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
+import java.util.Set;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -78,7 +79,7 @@ public class MainTeleop extends OpMode {
      * in the launch() function to only run the windmill servo when the motor is spinning fast
      * enough to make a successful throw.
      */
-    public final int LAUNCHER_TARGET_VELOCITY = 1250;
+    public final int LAUNCHER_TARGET_VELOCITY = 6500;
     public final int LAUNCHER_MIN_VELOCITY = 1200;
 
     /*
@@ -178,30 +179,12 @@ public class MainTeleop extends OpMode {
      */
     @Override
     public void loop() {
-        /*
-         * Here we call a function called arcadeDrive. The arcadeDrive function takes the input from
-         * the joysticks, and applies power to the left and right drive motor to move the robot
-         * as requested by the driver. "arcade" refers to the control style we're using here.
-         * Much like a classic arcade game, when you move the left joystick forward both motors
-         * work to drive the robot forward, and when you move the right joystick left and right
-         * both motors work to rotate the robot. Combinations of these inputs can be used to create
-         * more complex maneuvers.
-         */
+        
         double y  = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
         double x  = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
         double rx = gamepad1.right_stick_x;
-        /*
-         * Set the intake power variable to equal the right trigger, minus the left trigger.
-         * Each trigger outputs a signal from 0-1, with 0 as fully released, and 1 fully depressed.
-         * This gives us proportional control of the intake speed. The speed increases as we pull
-         * the right trigger further. It's occasionally helpful to be able to reverse the intake,
-         * so we also factor in the left trigger. If the left trigger is fully depressed,
-         * the intakePower variable will be -1. If the right trigger is fully depressed, the variable
-         * will be 1. If the driver pulls both triggers, the intake will remain off.
-         * We use this technique (creating a variable, and setting it to our control inputs) to
-         * allow us to avoid setting the same motors/servos power more than once per loop. That can
-         * create erratic behavior.
-         */
+        
+        // Set the intake power variable to equal the right trigger, minus the left trigger.
         intakePower = gamepad1.right_trigger - gamepad1.left_trigger;
 
         /*
@@ -287,7 +270,7 @@ public class MainTeleop extends OpMode {
          * add some power to the intake power. This can sometimes help dislodge stuck elements from
          * inside the hopper.
          */
-        if (gamepad1.b && launcher.getVelocity() > LAUNCHER_MIN_VELOCITY) {
+        if (gamepad1.b) {
             windmillServo.setPower(1);
             intakePower += 0.5;
         } else {
