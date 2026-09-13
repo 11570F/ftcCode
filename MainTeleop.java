@@ -28,7 +28,6 @@ import java.util.Set;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -60,9 +59,9 @@ public class MainTeleop extends OpMode {
     // Declare OpMode members.
     private DcMotorEx launcher;
     private DcMotor intake;
-    private CRServo leftIntakeServo;
-    private CRServo rightIntakeServo;
-    private CRServo windmillServo;
+    private Servo leftIntakeServo;
+    private Servo rightIntakeServo;
+    private Servo windmillServo;
     
     public DcMotor frontLeftMotor;
     public DcMotor backLeftMotor;
@@ -117,9 +116,9 @@ public class MainTeleop extends OpMode {
         
         intake = hardwareMap.get(DcMotor.class, "intake");
         launcher = hardwareMap.get(DcMotorEx.class, "launcher");
-        windmillServo = hardwareMap.get(CRServo.class, "windmillServo");
-        leftIntakeServo = hardwareMap.get(CRServo.class, "leftIntakeServo");
-        rightIntakeServo = hardwareMap.get(CRServo.class, "rightIntakeServo");
+        windmillServo = hardwareMap.get(Servo.class, "windmillServo");
+        leftIntakeServo = hardwareMap.get(Servo.class, "leftIntakeServo");
+        rightIntakeServo = hardwareMap.get(Servo.class, "rightIntakeServo");
         
 
         /*
@@ -143,17 +142,17 @@ public class MainTeleop extends OpMode {
         /*
          * set Feeders to an initial value to initialize the servo controller
          */
-        leftIntakeServo.setPower(0);
-        rightIntakeServo.setPower(0);
-        windmillServo.setPower(0);
+        leftIntakeServo.setPosition(0.0);
+        rightIntakeServo.setPosition(0.0);
+        windmillServo.setPosition(0.0);
 
         /*
          * Much like our drivetrain motors, we set the right intake servo to reverse so that both
          * servos work to pull elements into the intake.
          */
-        leftIntakeServo.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightIntakeServo.setDirection(DcMotorSimple.Direction.REVERSE);
-        windmillServo.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftIntakeServo.setDirection(Servo.Direction.REVERSE);
+        rightIntakeServo.setDirection(Servo.Direction.REVERSE);
+        windmillServo.setDirection(Servo.Direction.REVERSE);
 
         /*
          * Tell the driver that initialization is complete.
@@ -201,9 +200,6 @@ public class MainTeleop extends OpMode {
          * change the intake power. So we need to give our launch function a chance to modify the
          * variable before we write it to our motor and servos.
          */
-        intake.setPower(intakePower);
-        leftIntakeServo.setPower(intakePower);
-        rightIntakeServo.setPower(intakePower);
 
         double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
         double frontLeftPower  = (y + x + rx) / denominator;
@@ -264,10 +260,11 @@ public class MainTeleop extends OpMode {
          * add some power to the intake power. This can sometimes help dislodge stuck elements from
          * inside the hopper.
          */
-        if (gamepad1.b || gamepad2.b) {
-            windmillServo.setPower(1);
+        double pos = windmillServo.getPosition();
+        if ((gamepad1.b || gamepad2.b) && pos < 0.9) {
+            windmillServo.setPosition(pos + 0.3);
         } else {
-            windmillServo.setPower(0);
+            windmillServo.setPosition(0.0);
         }
     }
 
