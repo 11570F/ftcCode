@@ -100,8 +100,16 @@ public class BioBuzzStarterbotTeleop extends OpMode {
          * to 'get' must correspond to the names assigned during the robot configuration
          * step.
          */
-        leftDrive = hardwareMap.get(DcMotor.class, "leftDrive");
-        rightDrive = hardwareMap.get(DcMotor.class, "rightDrive");
+        DcMotor frontLeftMotor = hardwareMap.dcMotor.get("frontLeftMotor");
+        DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeftMotor");
+        DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
+        DcMotor backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
+
+        frontRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        backRightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        frontLeftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        
         intake = hardwareMap.get(DcMotor.class, "intake");
         launcher = hardwareMap.get(DcMotorEx.class, "launcher");
         windmillServo = hardwareMap.get(CRServo.class, "windmillServo");
@@ -176,7 +184,7 @@ public class BioBuzzStarterbotTeleop extends OpMode {
      * Code to run REPEATEDLY after the driver hits START but before they hit STOP
      */
     @Override
-    public void loop() {
+    while (opModeIsActive()) {
         /*
          * Here we call a function called arcadeDrive. The arcadeDrive function takes the input from
          * the joysticks, and applies power to the left and right drive motor to move the robot
@@ -186,8 +194,9 @@ public class BioBuzzStarterbotTeleop extends OpMode {
          * both motors work to rotate the robot. Combinations of these inputs can be used to create
          * more complex maneuvers.
          */
-        arcadeDrive(-gamepad1.left_stick_y, gamepad1.right_stick_x);
-
+        double y  = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
+        double x  = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+        double rx = gamepad1.right_stick_x;
         /*
          * Set the intake power variable to equal the right trigger, minus the left trigger.
          * Each trigger outputs a signal from 0-1, with 0 as fully released, and 1 fully depressed.
@@ -219,11 +228,40 @@ public class BioBuzzStarterbotTeleop extends OpMode {
         leftIntakeServo.setPower(intakePower);
         rightIntakeServo.setPower(intakePower);
 
-        /*
-         * Show motor powers on the Driver Station via telemetry.
-         */
-        telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-        telemetry.addLine();
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+        double frontLeftPower  = (y + x + rx) / denominator;
+        double backLeftPower   = (y - x + rx) / denominator;
+        double frontRightPower = (y - x - rx) / denominator;
+        double backRightPower  = (y + x - rx) / denominator;
+
+        if (gamepad1.right_bumper)
+            {
+                frontLeftMotor.setPower(frontLeftPower);
+                backLeftMotor.setPower(backLeftPower);
+                frontRightMotor.setPower(frontRightPower);
+                backRightMotor.setPower(backRightPower);
+            }
+            else if (gamepad1.left_bumper)
+            {
+                frontLeftMotor.setPower(frontLeftPower * 0.33);
+                backLeftMotor.setPower(backLeftPower * 0.33);
+                frontRightMotor.setPower(frontRightPower * 0.33);
+                backRightMotor.setPower(backRightPower * 0.33);
+            }
+            else if (gamepad1.right_trigger > 0.1)
+            {
+                frontLeftMotor.setPower(frontLeftPower * gamepad1.right_trigger);
+                backLeftMotor.setPower(backLeftPower * gamepad1.right_trigger);
+                frontRightMotor.setPower(frontRightPower * gamepad1.right_trigger);
+                backRightMotor.setPower(backRightPower * gamepad1.right_trigger);
+            }
+            else
+            {
+                frontLeftMotor.setPower(frontLeftPower * 0.75);
+                backLeftMotor.setPower(backLeftPower * 0.75);
+                frontRightMotor.setPower(frontRightPower * 0.75);
+                backRightMotor.setPower(backRightPower * 0.75);
+            }
 
     }
 
@@ -232,17 +270,6 @@ public class BioBuzzStarterbotTeleop extends OpMode {
      */
     @Override
     public void stop() {
-    }
-
-    void arcadeDrive(double forward, double rotate) {
-        leftPower = forward + rotate;
-        rightPower = forward - rotate;
-
-        /*
-         * Send calculated power to motors
-         */
-        leftDrive.setPower(leftPower);
-        rightDrive.setPower(rightPower);
     }
 
     void launch() {
@@ -254,7 +281,7 @@ public class BioBuzzStarterbotTeleop extends OpMode {
          * holding down the right gamepad. If they are, then we want to start spinning up the launcher.
          * Otherwise, we start spinning the launcher down.
          */
-        if (gamepad1.right_bumper) {
+        if (gamepad1.A) {
             launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
         } else {
             launcher.setVelocity(0);
@@ -267,7 +294,7 @@ public class BioBuzzStarterbotTeleop extends OpMode {
          * add some power to the intake power. This can sometimes help dislodge stuck elements from
          * inside the hopper.
          */
-        if (gamepad1.right_bumper && launcher.getVelocity() > LAUNCHER_MIN_VELOCITY) {
+        if (gamepad1.B && launcher.getVelocity() > LAUNCHER_MIN_VELOCITY) {
             windmillServo.setPower(1);
             intakePower += 0.5;
         } else {
