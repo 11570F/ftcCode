@@ -145,12 +145,13 @@ public class MainTeleop extends OpMode {
          */
         leftIntakeServo.setPower(0);
         rightIntakeServo.setPower(0);
-        windmillServo.setPosition(0.0);
+        windmillServo.setPower(0);
 
         /*
          * Much like our drivetrain motors, we set the right intake servo to reverse so that both
          * servos work to pull elements into the intake.
          */
+        leftIntakeServo.setDirection(DcMotorSimple.Direction.REVERSE);
         rightIntakeServo.setDirection(DcMotorSimple.Direction.REVERSE);
         windmillServo.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -264,9 +265,9 @@ public class MainTeleop extends OpMode {
          * inside the hopper.
          */
         if (gamepad1.b || gamepad2.b) {
-            windmillServo.setPosition(windmillServo.position + 0.3); ;
+            windmillServo.setPower(1);
         } else {
-            windmillServo.setPower(90);
+            windmillServo.setPower(0);
         }
     }
 
