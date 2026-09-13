@@ -81,20 +81,10 @@ public class MainTeleop extends OpMode {
     public final int LAUNCHER_TARGET_VELOCITY = 1405;
     public final int LAUNCHER_MIN_VELOCITY = 1200;
 
-    /*
-     * These two variables store the power we need to apply to the motors. In other cases, we may
-     * choose to declare these variables inside the arcadeDrive() function, instead we declare them
-     * here so that we can access them in our main loop for telemetry.
-     */
-    double leftPower;
-    double rightPower;
-
     // Create a variable to set to the intake.
     double intakePower;
 
-    /*
-     * Code to run ONCE when the driver hits INIT
-     */
+    // Code to run ONCE when the driver hits INIT
     @Override
     public void init() {
 
@@ -139,9 +129,7 @@ public class MainTeleop extends OpMode {
 
         launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(40, 0, 0, 12.5));
 
-        /*
-         * set Feeders to an initial value to initialize the servo controller
-         */
+        // set Feeders to an initial value to initialize the servo controller
         leftIntakeServo.setPosition(0.0);
         rightIntakeServo.setPosition(0.0);
         windmillServo.setPosition(0.0);
@@ -152,34 +140,29 @@ public class MainTeleop extends OpMode {
          */
         leftIntakeServo.setDirection(Servo.Direction.REVERSE);
         rightIntakeServo.setDirection(Servo.Direction.REVERSE);
-        windmillServo.setDirection(Servo.Direction.REVERSE);
+        windmillServo.setDirection(Servo.Direction.FORWARD);
 
-        /*
-         * Tell the driver that initialization is complete.
-         */
+        // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }
 
-    /*
-     * Code to run REPEATEDLY after the driver hits INIT, but before they hit START
-     */
+    // Code to run REPEATEDLY after the driver hits INIT, but before they hit START
+     
     @Override
     public void init_loop() {
     }
 
-    /*
-     * Code to run ONCE when the driver hits START
-     */
+    // Code to run ONCE when the driver hits START
+     
     @Override
     public void start() {
     }
-
-    /*
-     * Code to run REPEATEDLY after the driver hits START but before they hit STOP
-     */
+    
+    // Code to run REPEATEDLY after the driver hits START but before they hit STOP
+    
     @Override
     public void loop() {
-        
+        // TeleOp variables
         double y  = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
         double x  = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
         double rx = gamepad1.right_stick_x;
@@ -187,26 +170,18 @@ public class MainTeleop extends OpMode {
         // Set the intake power variable to equal the right trigger, minus the left trigger.
         intakePower = gamepad2.right_trigger - gamepad2.left_trigger;
 
-        /*
-         * The launch() function handles setting motor velocity, and running the windmill servo
-         * to feed the elements into the launcher wheel.
+         /* The launch() function handles setting motor velocity, and running the windmill servo
+         *  to feed the elements into the launcher wheel.
          */
         launch();
 
-        /*
-         * Here we set our intake motor and servos to their intake power. The order of operations
-         * here is important though. The gamepad triggers define the starting point for the intake
-         * power variable in each loop of our code, but inside our launch function we also sometimes
-         * change the intake power. So we need to give our launch function a chance to modify the
-         * variable before we write it to our motor and servos.
-         */
-
+        // This is math from GM0 to move via mecanum wheels
         double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
         double frontLeftPower  = (y + x + rx) / denominator;
         double backLeftPower   = (y - x + rx) / denominator;
         double frontRightPower = (y - x - rx) / denominator;
         double backRightPower  = (y + x - rx) / denominator;
-
+        // Speed Modes: Right = fast / Left = slow
         if (gamepad1.right_bumper)
             {
                 frontLeftMotor.setPower(frontLeftPower);
@@ -231,37 +206,22 @@ public class MainTeleop extends OpMode {
 
     }
 
-    /*
-     * Code to run ONCE after the driver hits STOP
-     */
+    // Code to run ONCE after the driver hits STOP
     @Override
     public void stop() {
     }
 
     void launch() {
-        /*
-         * Calling gamepad1.right_bumper returns a boolean which will be true if the bumper is
-         * held down, and false if it is not. Notably, this will continue to be true for every
-         * cycle of our code that the driver holds down that bumper.
-         * The first step of our launch() function is checking to see if the user is currently
-         * holding down the right gamepad. If they are, then we want to start spinning up the launcher.
-         * Otherwise, we start spinning the launcher down.
-         */
+        // This activates the launcher when you press X, or A
         if (gamepad1.a || gamepad2.a) {
             launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
         } else {
             launcher.setVelocity(0);
         }
 
-        /*
-         * Here we ask if the driver is currently pressing the right bumper, AND the launcher is
-         * spinning fast enough to make a successful shot. If it is, then we will turn on the
-         * windmill servo to start feeding the elements into the launcher motor. We also
-         * add some power to the intake power. This can sometimes help dislodge stuck elements from
-         * inside the hopper.
-         */
+        // This spins the windmill when we press Circle, or B
         double pos = windmillServo.getPosition();
-        if ((gamepad1.b || gamepad2.b) && pos < 0.9) {
+        if (gamepad2.b && pos < 0.9) {
             windmillServo.setPosition(pos + 0.3);
         } else {
             windmillServo.setPosition(0.0);
