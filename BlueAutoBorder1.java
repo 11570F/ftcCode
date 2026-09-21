@@ -87,31 +87,30 @@ public class BlueAutoBorder1 extends LinearOpMode {
             leftInches = Math.floor(forward * COUNTS_PER_INCH);
             rightInches = Math.floor(-forward * COUNTS_PER_INCH);
             
-            frontLeftTarget = frontLeftMotor.getCurrentPosition() + Math.floor(leftInches * COUNTS_PER_INCH);
-            frontRightTarget = frontRightMotor.getCurrentPosition() + Math.floor(-rightInches * COUNTS_PER_INCH);
-            backLeftTarget = backLeftMotor.getCurrentPosition() + Math.floor(-leftInches * COUNTS_PER_INCH);
-            backRightTarget = backRightMotor.getCurrentPosition() + Math.floor(rightInches * COUNTS_PER_INCH);
+            frontLeftTarget = (int) (frontLeftMotor.getCurrentPosition() - leftInches);
+            frontRightTarget = (int) (frontRightMotor.getCurrentPosition() + rightInches);
+            backLeftTarget = (int) (backLeftMotor.getCurrentPosition() + leftInches);
+            backRightTarget = (int) (backRightMotor.getCurrentPosition() - rightInches);
             
-            backLeftMotor.setTargetPosition((int) backLeftTarget);
-            backRightMotor.setTargetPosition((int) backRightTarget);
-            frontLeftMotor.setTargetPosition((int) frontLeftTarget);
-            frontRightMotor.setTargetPosition((int) frontRightTarget);
+            backLeftMotor.setTargetPosition(backLeftTarget);
+            backRightMotor.setTargetPosition(backRightTarget);
+            frontLeftMotor.setTargetPosition(frontLeftTarget);
+            frontRightMotor.setTargetPosition(frontRightTarget);
         }
-        
         if (rotate > 0)
         {
             leftInches = Math.floor(forward * COUNTS_PER_INCH);
             rightInches = Math.floor(-forward * COUNTS_PER_INCH);
             
-            frontLeftTarget = frontLeftMotor.getCurrentPosition() + Math.floor(leftInches * COUNTS_PER_INCH);
-            frontRightTarget = frontRightMotor.getCurrentPosition() + Math.floor(-rightInches * COUNTS_PER_INCH);
-            backLeftTarget = backLeftMotor.getCurrentPosition() + Math.floor(leftInches * COUNTS_PER_INCH);
-            backRightTarget = backRightMotor.getCurrentPosition() + Math.floor(-rightInches * COUNTS_PER_INCH);
+            frontLeftTarget = (int) (frontLeftMotor.getCurrentPosition() - leftInches);
+            frontRightTarget = (int) (frontRightMotor.getCurrentPosition() + rightInches);
+            backLeftTarget = (int) (backLeftMotor.getCurrentPosition() - leftInches);
+            backRightTarget = (int) (backRightMotor.getCurrentPosition() + rightInches);
             
-            backLeftMotor.setTargetPosition((int) backLeftTarget);
-            backRightMotor.setTargetPosition((int) backRightTarget);
-            frontLeftMotor.setTargetPosition((int) frontLeftTarget);
-            frontRightMotor.setTargetPosition((int) frontRightTarget);
+            backLeftMotor.setTargetPosition(backLeftTarget);
+            backRightMotor.setTargetPosition(backRightTarget);
+            frontLeftMotor.setTargetPosition(frontLeftTarget);
+            frontRightMotor.setTargetPosition(frontRightTarget);
         }
     }
 }
