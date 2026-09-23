@@ -24,6 +24,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
+import com.qualcomm.robotcore.hardware.CRServoImpl;
+import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import java.util.Set;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -31,10 +33,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.CRServoImplEx;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.PwmControl;
 
 
 /*
@@ -59,9 +63,9 @@ public class MainTeleop extends OpMode {
     // Declare OpMode members.
     private DcMotorEx launcher;
     private DcMotor intake;
-    private Servo leftIntakeServo;
-    private Servo rightIntakeServo;
-    private Servo windmillServo;
+    private CRServoImplEx leftIntakeServo;
+    private CRServoImplEx rightIntakeServo;
+    private CRServoImplEx windmillServo;
     
     public DcMotor frontLeftMotor;
     public DcMotor backLeftMotor;
@@ -99,16 +103,16 @@ public class MainTeleop extends OpMode {
         frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
         backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
          
-        frontRightMotor.setDirection(DcMotor.Direction.FORWARD);
-        backRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
+        backRightMotor.setDirection(DcMotor.Direction.FORWARD);
         frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         
         intake = hardwareMap.get(DcMotor.class, "intake");
         launcher = hardwareMap.get(DcMotorEx.class, "launcher");
-        windmillServo = hardwareMap.get(Servo.class, "windmillServo");
-        leftIntakeServo = hardwareMap.get(Servo.class, "leftIntakeServo");
-        rightIntakeServo = hardwareMap.get(Servo.class, "rightIntakeServo");
+        windmillServo = hardwareMap.get(CRServoImplEx.class, "windmillServo");
+        leftIntakeServo = hardwareMap.get(CRServoImplEx.class, "leftIntakeServo");
+        rightIntakeServo = hardwareMap.get(CRServoImplEx.class, "rightIntakeServo");
         
 
         /*
@@ -130,17 +134,17 @@ public class MainTeleop extends OpMode {
         launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(40, 0, 0, 12.5));
 
         // set Feeders to an initial value to initialize the servo controller
-        leftIntakeServo.setPosition(0.0);
-        rightIntakeServo.setPosition(0.0);
-        windmillServo.setPosition(0.0);
-
+        leftIntakeServo.setPower(0);
+        rightIntakeServo.setPower(0);
+        windmillServo.setPower(0);
+        
         /*
          * Much like our drivetrain motors, we set the right intake servo to reverse so that both
          * servos work to pull elements into the intake.
          */
-        leftIntakeServo.setDirection(Servo.Direction.REVERSE);
-        rightIntakeServo.setDirection(Servo.Direction.REVERSE);
-        windmillServo.setDirection(Servo.Direction.FORWARD);
+        leftIntakeServo.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightIntakeServo.setDirection(DcMotorSimple.Direction.REVERSE);
+        windmillServo.setDirection(DcMotorSimple.Direction.FORWARD);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -179,8 +183,8 @@ public class MainTeleop extends OpMode {
         double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
         double frontLeftPower  = (y + x + rx) / denominator;
         double backLeftPower   = (y - x + rx) / denominator;
-        double frontRightPower = (y - x - rx) / denominator;
-        double backRightPower  = (y + x - rx) / denominator;
+        double frontRightPower = (y + x - rx) / denominator;
+        double backRightPower  = (y - x - rx) / denominator;
         // Speed Modes: Right = fast / Left = slow
         if (gamepad1.right_bumper)
             {
@@ -220,11 +224,10 @@ public class MainTeleop extends OpMode {
         }
 
         // This spins the windmill when we press Circle, or B
-        double pos = windmillServo.getPosition();
-        if (gamepad2.b && pos < 0.9) {
-            windmillServo.setPosition(pos + 0.3);
+        if (gamepad2.b) {
+            windmillServo.setPower(1);
         } else {
-            windmillServo.setPosition(0.0);
+            windmillServo.setPower(0);
         }
     }
 
