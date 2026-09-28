@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@TeleOp
-public class BlueAutoBorder1 extends LinearOpMode {
+@Autonomous
+public class BlueAutoBorder1 extends LinearOpMode 
+{
     @Override
     public void runOpMode() throws InterruptedException {
         // Declare our motors
@@ -20,11 +22,6 @@ public class BlueAutoBorder1 extends LinearOpMode {
         frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        
-        backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Reverse the right side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
@@ -42,7 +39,7 @@ public class BlueAutoBorder1 extends LinearOpMode {
         if (isStopRequested()) return; // Stops the robot
 
         while (opModeIsActive()) {
-            
+            distance(1,0,0);
             
         }
         
@@ -112,6 +109,17 @@ public class BlueAutoBorder1 extends LinearOpMode {
             frontLeftMotor.setTargetPosition(frontLeftTarget);
             frontRightMotor.setTargetPosition(frontRightTarget);
         }
+        
+        frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        
+        frontLeftMotor.setPower(0.7);
+        backLeftMotor.setPower(0.7);
+        frontRightMotor.setPower(0.7);
+        backRightMotor.setPower(0.7);
+
     }
 }
     
