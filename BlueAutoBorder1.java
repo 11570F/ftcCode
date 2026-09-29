@@ -47,7 +47,7 @@ public class BlueAutoBorder1 extends LinearOpMode
     private void distance(float forward, float strafe, float rotate) // all measurements in inches
     {
         int tps = 5000;
-        int COUNTS_PER_INCH = 1440;
+        int COUNTS_PER_INCH = 720;
         double leftInches;
         double rightInches;
         boolean forwardCheck;
@@ -61,7 +61,10 @@ public class BlueAutoBorder1 extends LinearOpMode
         int frontRightTarget;
         int backLeftTarget;
         int backRightTarget;
-        
+        frontLeftMotor.setPower(0.7);
+        backLeftMotor.setPower(0.7);
+        frontRightMotor.setPower(0.7);
+        backRightMotor.setPower(0.7);
         
         if (forward > 0)
         {
@@ -114,12 +117,6 @@ public class BlueAutoBorder1 extends LinearOpMode
         backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        
-        frontLeftMotor.setPower(0.7);
-        backLeftMotor.setPower(0.7);
-        frontRightMotor.setPower(0.7);
-        backRightMotor.setPower(0.7);
-
     }
 }
     
