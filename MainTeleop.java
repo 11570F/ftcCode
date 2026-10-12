@@ -142,9 +142,13 @@ public class MainTeleop extends OpMode {
          * Much like our drivetrain motors, we set the right intake servo to reverse so that both
          * servos work to pull elements into the intake.
          */
-        leftIntakeServo.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightIntakeServo.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftIntakeServo.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightIntakeServo.setDirection(DcMotorSimple.Direction.FORWARD);
         windmillServo.setDirection(DcMotorSimple.Direction.FORWARD);
+        
+        windmillServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        rightIntakeServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
+        leftIntakeServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -172,8 +176,21 @@ public class MainTeleop extends OpMode {
         double rx = gamepad1.right_stick_x;
         
         // Set the intake power variable to equal the right trigger, minus the left trigger.
-        intakePower = gamepad2.right_trigger - gamepad2.left_trigger;
-
+        if (gamepad1.right_trigger > 0.1){
+            intake.setPower(1);
+            rightIntakeServo.setPower(1);
+            leftIntakeServo.setPower(-1);
+        } else {
+            intake.setPower(0);
+            rightIntakeServo.setPower(0);
+            leftIntakeServo.setPower(0);
+        }
+        if (gamepad1.left_trigger > 0.1){
+            intake.setPower(-1);
+        } else if (gamepad1.right_trigger < 0.1) 
+        {
+            intake.setPower(0);
+        }
          /* The launch() function handles setting motor velocity, and running the windmill servo
          *  to feed the elements into the launcher wheel.
          */
@@ -224,11 +241,16 @@ public class MainTeleop extends OpMode {
         }
 
         // This spins the windmill when we press Circle, or B
-        if (gamepad2.b) {
-            windmillServo.setPower(1);
-        } else {
+        if (gamepad1.b || gamepad2.b) {
+            windmillServo.setPower(0.7);
+        }
+        else if (gamepad1.x || gamepad2.x) {
+            windmillServo.setPower(-1);
+        }
+         else {
             windmillServo.setPower(0);
         }
+        
     }
 
 

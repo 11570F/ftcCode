@@ -1,122 +1,153 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Autonomous
 public class BlueAutoBorder1 extends LinearOpMode 
 {
+    public DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor;
     @Override
     public void runOpMode() throws InterruptedException {
         // Declare our motors
-        // Make sure your ID's match your configuration
-        DcMotor frontLeftMotor = hardwareMap.dcMotor.get("frontLeftMotor");
-        DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeftMotor");
-        DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
-        DcMotor backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
+        frontLeftMotor  = hardwareMap.get(DcMotorEx.class, "frontLeftMotor");
+        backLeftMotor   = hardwareMap.get(DcMotorEx.class, "backLeftMotor");
+        frontRightMotor = hardwareMap.get(DcMotorEx.class, "frontRightMotor");
+        backRightMotor  = hardwareMap.get(DcMotorEx.class, "backRightMotor");
         
-        backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        frontRightMotor.setDirection(DcMotorEx.Direction.FORWARD);
+        backRightMotor.setDirection(DcMotorEx.Direction.FORWARD);
+        frontLeftMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        backLeftMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        
+        // Make sure your ID's match your configuration
+        backLeftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        frontLeftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        backRightMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        
+                frontRightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        backRightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        frontLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        backLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         // Reverse the right side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
         // reverse the left side instead.
         // See the note about this earlier on this page.
-        frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
-        backRightMotor.setDirection(DcMotor.Direction.FORWARD);
-        frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
-        backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         
+        //backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         
         waitForStart(); // Begins Repeat loop
 
         if (isStopRequested()) return; // Stops the robot
-
-        while (opModeIsActive()) {
-            distance(1,0,0);
-            
-        }
+        
+        // Step 1
+        distance(1,0,0);
         
     }
-    private void distance(float forward, float strafe, float rotate) // all measurements in inches
+    public void distance(float forward, float strafe, float rotate) // all measurements in inches
     {
-        int tps = 5000;
-        int COUNTS_PER_INCH = 720;
+        int COUNTS_PER_INCH = 7200;
         double leftInches;
-        double rightInches;
-        boolean forwardCheck;
-        boolean strafeCheck;
-        boolean rotateCheck;
-        DcMotor frontLeftMotor = hardwareMap.dcMotor.get("frontLeftMotor");
-        DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeftMotor");
-        DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRightMotor");
-        DcMotor backRightMotor = hardwareMap.dcMotor.get("backRightMotor");
+        //     double rightInches;
+        // frontLeftMotor  = hardwareMap.get(DcMotorEx.class, "frontLeftMotor");
+        //  backLeftMotor   = hardwareMap.get(DcMotorEx.class, "backLeftMotor");
+        //  frontRightMotor = hardwareMap.get(DcMotorEx.class, "frontRightMotor");
+        //  backRightMotor  = hardwareMap.get(DcMotorEx.class, "backRightMotor");
+
         int frontLeftTarget;
-        int frontRightTarget;
-        int backLeftTarget;
-        int backRightTarget;
-        frontLeftMotor.setPower(0.7);
-        backLeftMotor.setPower(0.7);
-        frontRightMotor.setPower(0.7);
-        backRightMotor.setPower(0.7);
+        // int frontRightTarget;
+        // int backLeftTarget;
+        // int backRightTarget;        
+
         
         if (forward > 0)
         {
-            leftInches = Math.floor(forward * COUNTS_PER_INCH);
-            rightInches = Math.floor(-forward * COUNTS_PER_INCH);
+            leftInches  = Math.floor(forward * COUNTS_PER_INCH);
+            // rightInches = Math.floor(-forward * COUNTS_PER_INCH);
             
-            frontLeftTarget = (int) (frontLeftMotor.getCurrentPosition() + leftInches);
-            frontRightTarget = (int) (frontRightMotor.getCurrentPosition() + rightInches);
-            backLeftTarget = (int) (backLeftMotor.getCurrentPosition() + leftInches);
-            backRightTarget = (int) (backRightMotor.getCurrentPosition() + rightInches);
+            frontLeftTarget  = (int) (frontLeftMotor.getCurrentPosition()  + leftInches);
+            // frontRightTarget = (int) (frontRightMotor.getCurrentPosition() + leftInches);
+            // backLeftTarget   = (int) (backLeftMotor.getCurrentPosition()   + leftInches);
+            // backRightTarget  = (int) (backRightMotor.getCurrentPosition()  + leftInches);
             
-            backLeftMotor.setTargetPosition(backLeftTarget);
-            backRightMotor.setTargetPosition(backRightTarget);
+            backLeftMotor.setTargetPosition(frontLeftTarget);
+            backRightMotor.setTargetPosition(frontLeftTarget);
             frontLeftMotor.setTargetPosition(frontLeftTarget);
-            frontRightMotor.setTargetPosition(frontRightTarget);
+            frontRightMotor.setTargetPosition(frontLeftTarget);
+            
+            frontRightMotor.setPower(0.3);
+            backRightMotor.setPower(0.3);
+            frontLeftMotor.setPower(0.3);
+            backLeftMotor.setPower(0.3);
         }
         
-        if (strafe > 0)
-        {
-            leftInches = Math.floor(forward * COUNTS_PER_INCH);
-            rightInches = Math.floor(-forward * COUNTS_PER_INCH);
+        // if (strafe > 0)
+        // {
+        //     leftInches  = Math.floor(forward * COUNTS_PER_INCH);
+        //     rightInches = Math.floor(forward * COUNTS_PER_INCH);
             
-            frontLeftTarget = (int) (frontLeftMotor.getCurrentPosition() - leftInches);
-            frontRightTarget = (int) (frontRightMotor.getCurrentPosition() + rightInches);
-            backLeftTarget = (int) (backLeftMotor.getCurrentPosition() + leftInches);
-            backRightTarget = (int) (backRightMotor.getCurrentPosition() - rightInches);
+        //     frontLeftTarget  = (int) (frontLeftMotor.getCurrentPosition()  - leftInches);
+        //     frontRightTarget = (int) (frontRightMotor.getCurrentPosition() + rightInches);
+        //     backLeftTarget   = (int) (backLeftMotor.getCurrentPosition()   + leftInches);
+        //     backRightTarget  = (int) (backRightMotor.getCurrentPosition()  - rightInches);
             
-            backLeftMotor.setTargetPosition(backLeftTarget);
-            backRightMotor.setTargetPosition(backRightTarget);
-            frontLeftMotor.setTargetPosition(frontLeftTarget);
-            frontRightMotor.setTargetPosition(frontRightTarget);
-        }
-        if (rotate > 0)
-        {
-            leftInches = Math.floor(forward * COUNTS_PER_INCH);
-            rightInches = Math.floor(-forward * COUNTS_PER_INCH);
+        //     backLeftMotor.setTargetPosition(backLeftTarget);
+        //     backRightMotor.setTargetPosition(backRightTarget);
+        //     frontLeftMotor.setTargetPosition(frontLeftTarget);
+        //     frontRightMotor.setTargetPosition(frontRightTarget);
             
-            frontLeftTarget = (int) (frontLeftMotor.getCurrentPosition() - leftInches);
-            frontRightTarget = (int) (frontRightMotor.getCurrentPosition() + rightInches);
-            backLeftTarget = (int) (backLeftMotor.getCurrentPosition() - leftInches);
-            backRightTarget = (int) (backRightMotor.getCurrentPosition() + rightInches);
             
-            backLeftMotor.setTargetPosition(backLeftTarget);
-            backRightMotor.setTargetPosition(backRightTarget);
-            frontLeftMotor.setTargetPosition(frontLeftTarget);
-            frontRightMotor.setTargetPosition(frontRightTarget);
-        }
+            
+        //     telemetry.addLine("strafe is running");
+        // }
+        // if (rotate > 0)
+        // {
+        //     leftInches  = Math.floor(forward * COUNTS_PER_INCH);
+        //     rightInches = Math.floor(-forward * COUNTS_PER_INCH);
+            
+        //     frontLeftTarget  = (int) (frontLeftMotor.getCurrentPosition()  - leftInches);
+        //     frontRightTarget = (int) (frontRightMotor.getCurrentPosition() + rightInches);
+        //     backLeftTarget   = (int) (backLeftMotor.getCurrentPosition()   - leftInches);
+        //     backRightTarget  = (int) (backRightMotor.getCurrentPosition()  + rightInches);
+            
+        //     backLeftMotor.setTargetPosition(backLeftTarget);
+        //     backRightMotor.setTargetPosition(backRightTarget);
+        //     frontLeftMotor.setTargetPosition(frontLeftTarget);
+        //     frontRightMotor.setTargetPosition(frontRightTarget);
+            
+        //     telemetry.addLine("rotate is running");
+        // }
+
+
         
-        frontLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backLeftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while (opModeIsActive() && (backRightMotor.isBusy() || frontRightMotor.isBusy()) && (backLeftMotor.isBusy() || frontLeftMotor.isBusy())) {
+            telemetry.addData("frontLeftPos", frontLeftMotor.getCurrentPosition());
+            // telemetry.addData("frontRightPos", frontRightMotor.getCurrentPosition());
+            // telemetry.addData("backLeftPos", backLeftMotor.getCurrentPosition());
+            telemetry.addData("backRightPos", backRightMotor.getCurrentPosition());
+            telemetry.addData("backRightTarget", backRightMotor.getTargetPosition());
+            telemetry.addData("frontLeftTarget", frontLeftMotor.getTargetPosition());
+            // telemetry.addData("frontRightTarget", frontRightMotor.getTargetPosition());
+            telemetry.update();
+        }
+        frontLeftMotor.setPower(0);
+        backLeftMotor.setPower(0);
+        frontRightMotor.setPower(0);
+        backRightMotor.setPower(0);
+        frontLeftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        backRightMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        
     }
 }
     
