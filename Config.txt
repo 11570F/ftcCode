@@ -1,20 +1,20 @@
 Expansion hub: ALL GOBILDA 5202/3/4 MOTORS
-0. frontLeftMotor
-1. backLeftMotor
-2. Nothing
-3. launcher
+0) frontLeftMotor
+1) backLeftMotor
+2) Nothing
+3) launcher
 Control Hub
-0. Nothing
-1. backRightMotor
-2. frontRightMotor
-3. intake
+0) Nothing
+1) backRightMotor
+2) frontRightMotor
+3) intake
 
 Servos (Continuous Rotation Servo)
 
 Expansion Hub:
-0. leftIntakeServo
-1-5. Nothing
+0) leftIntakeServo
+1-5) Nothing
 Control Hub:
-0. rightIntakeServo
-1. windmillServo
-2-5. Nothing
+0) rightIntakeServo
+1) windmillServo
+2-5) Nothing
