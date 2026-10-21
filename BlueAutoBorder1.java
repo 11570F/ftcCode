@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 public class BlueAutoBorder1 extends LinearOpMode 
 {
     public DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor, launcher;
+    public int launcherSpeed = 1405;
     @Override
     public void runOpMode() throws InterruptedException {
         // Declare our motors
@@ -100,7 +101,10 @@ public class BlueAutoBorder1 extends LinearOpMode
             frontLeftMotor.setTargetPosition(frontLeftTarget);
             frontRightMotor.setTargetPosition(frontRightTarget);
             
-            
+            frontRightMotor.setPower(0.3);
+            backRightMotor.setPower(0.3);
+            frontLeftMotor.setPower(0.3);
+            backLeftMotor.setPower(0.3);
             
             telemetry.addLine("strafe is running");
         }
@@ -118,6 +122,11 @@ public class BlueAutoBorder1 extends LinearOpMode
             backRightMotor.setTargetPosition(backRightTarget);
             frontLeftMotor.setTargetPosition(frontLeftTarget);
             frontRightMotor.setTargetPosition(frontRightTarget);
+
+            frontRightMotor.setPower(0.3);
+            backRightMotor.setPower(0.3);
+            frontLeftMotor.setPower(0.3);
+            backLeftMotor.setPower(0.3);
             
             telemetry.addLine("rotate is running");
         }
@@ -126,6 +135,8 @@ public class BlueAutoBorder1 extends LinearOpMode
             leftInches  = Math.floor(shoot * COUNTS_PER_INCH);
 
             launcherTarget = (int) (launcherTarget.getCurrentPosition() + leftInches);
+
+            launcher.setVelocity(launcherSpeed);
         }
         backLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         frontLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
