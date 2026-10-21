@@ -151,10 +151,12 @@ public class BlueAutoBorder1 extends LinearOpMode
         backLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
         backRightMotor.setPower(0);
+        launcher.setPower(0);
         frontLeftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         frontRightMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         backLeftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         backRightMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        launcher.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         
     }
 }
