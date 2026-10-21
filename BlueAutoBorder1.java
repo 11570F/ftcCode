@@ -48,12 +48,12 @@ public class BlueAutoBorder1 extends LinearOpMode
         if (isStopRequested()) return; // Stops the robot
         
         // Step 1
-        distance(1,0,0);
+        distance(1,0,0,0);
         
     }
     public void distance(float forward, float strafe, float rotate, float shoot) // all measurements in inches
     {
-        int COUNTS_PER_INCH = 7200;
+        int COUNTS_PER_INCH = 720;
         double leftInches;
         double rightInches;
 
