@@ -6,11 +6,16 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.CRServoImplEx;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.PwmControl;
+
 
 @Autonomous
-public class BlueAutoBorder1 extends LinearOpMode 
+public class CloseAutoBorderBlue1 extends LinearOpMode 
 {
     public DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor, launcher;
+    public CRServoImplEx windmill;
     public int launcherSpeed = 1405;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -20,6 +25,9 @@ public class BlueAutoBorder1 extends LinearOpMode
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "frontRightMotor");
         backRightMotor  = hardwareMap.get(DcMotorEx.class, "backRightMotor");
         launcher        = hardwareMap.get(DcMotorEx.class, "launcher");
+        windmill        = hardwareMap.get(CRServoImplEx.class, "windmillServo");
+        
+        windmill.setPwmRange(new PwmControl.PwmRange(500, 2500));
         
         frontRightMotor.setDirection(DcMotorEx.Direction.FORWARD);
         backRightMotor.setDirection(DcMotorEx.Direction.FORWARD);
@@ -49,7 +57,8 @@ public class BlueAutoBorder1 extends LinearOpMode
         if (isStopRequested()) return; // Stops the robot
         
         // Step 1
-        distance(1,0,0,0);
+        distance(0,0,0,30);
+        windmill.setPower(0);
         
     }
     public void distance(float forward, float strafe, float rotate, float shoot) // all measurements in inches
@@ -84,6 +93,13 @@ public class BlueAutoBorder1 extends LinearOpMode
             backRightMotor.setPower(0.3);
             frontLeftMotor.setPower(0.3);
             backLeftMotor.setPower(0.3);
+            
+            backLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            frontLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            backRightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            frontRightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            
+            telemetry.addLine("Forward is running!");
         }
         
         if (strafe > 0)
@@ -101,10 +117,20 @@ public class BlueAutoBorder1 extends LinearOpMode
             frontLeftMotor.setTargetPosition(frontLeftTarget);
             frontRightMotor.setTargetPosition(frontRightTarget);
             
+            backLeftMotor.setTargetPositionTolerance(30);
+            backRightMotor.setTargetPositionTolerance(30);
+            frontLeftMotor.setTargetPositionTolerance(30);
+            frontRightMotor.setTargetPositionTolerance(30);
+            
             frontRightMotor.setPower(0.3);
             backRightMotor.setPower(0.3);
             frontLeftMotor.setPower(0.3);
             backLeftMotor.setPower(0.3);
+            
+            backLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            frontLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            backRightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            frontRightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
             
             telemetry.addLine("strafe is running");
         }
@@ -122,11 +148,21 @@ public class BlueAutoBorder1 extends LinearOpMode
             backRightMotor.setTargetPosition(backRightTarget);
             frontLeftMotor.setTargetPosition(frontLeftTarget);
             frontRightMotor.setTargetPosition(frontRightTarget);
+            
+            backLeftMotor.setTargetPositionTolerance(30);
+            backRightMotor.setTargetPositionTolerance(30);
+            frontLeftMotor.setTargetPositionTolerance(30);
+            frontRightMotor.setTargetPositionTolerance(30);
 
             frontRightMotor.setPower(0.3);
             backRightMotor.setPower(0.3);
             frontLeftMotor.setPower(0.3);
             backLeftMotor.setPower(0.3);
+            
+            backLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            frontLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            backRightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            frontRightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
             
             telemetry.addLine("rotate is running");
         }
@@ -134,17 +170,18 @@ public class BlueAutoBorder1 extends LinearOpMode
         {
             leftInches  = Math.floor(shoot * COUNTS_PER_INCH);
 
-            launcherTarget = (int) (launcherTarget.getCurrentPosition() + leftInches);
+            launcherTarget = (int) (launcher.getCurrentPosition() + leftInches);
 
-            launcher.setVelocity(launcherSpeed);
+            launcher.setTargetPosition(launcherTarget);
+            launcher.setTargetPositionTolerance(1000);
+            launcher.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            launcher.setVelocity(1300);
         }
-        backLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        frontLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        backRightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSiTION);
-        frontRightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSiTION);
-        launcher.setMode(DcMotorEx.RunMode.RUN_TO_POSiTION);
-        
-        
+        if (launcher.isBusy()){
+            sleep(3000);
+            windmill.setPower(0.4);
+            telemetry.update();
+        }
         while (opModeIsActive() && (backRightMotor.isBusy() || frontRightMotor.isBusy()) || (backLeftMotor.isBusy() || frontLeftMotor.isBusy()) || launcher.isBusy()) {
             telemetry.addData("frontLeftPos", frontLeftMotor.getCurrentPosition());
             telemetry.addData("frontRightPos", frontRightMotor.getCurrentPosition());
@@ -155,14 +192,15 @@ public class BlueAutoBorder1 extends LinearOpMode
             telemetry.addData("frontLeftTarget", frontLeftMotor.getTargetPosition());
             telemetry.addData("frontRightTarget", frontRightMotor.getTargetPosition());
             telemetry.addData("backLeftTarget", backLeftMotor.getTargetPosition());
-            telemetry.addData("launcherTarget", launcher.getTargetPostion());
+            telemetry.addData("launcherTarget", launcher.getTargetPosition());
             telemetry.update();
         }
         frontLeftMotor.setPower(0);
         backLeftMotor.setPower(0);
         frontRightMotor.setPower(0);
         backRightMotor.setPower(0);
-        launcher.setPower(0);
+        launcher.setVelocity(0);
+        windmill.setPower(0);
         frontLeftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         frontRightMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         backLeftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
