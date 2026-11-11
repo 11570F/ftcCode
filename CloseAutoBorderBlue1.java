@@ -57,7 +57,7 @@ public class CloseAutoBorderBlue1 extends LinearOpMode
         if (isStopRequested()) return; // Stops the robot
         
         // Step 1
-        distance(0,0,0,30);
+        distance(0,0,0,20);
         windmill.setPower(0);
         
     }
@@ -175,10 +175,10 @@ public class CloseAutoBorderBlue1 extends LinearOpMode
             launcher.setTargetPosition(launcherTarget);
             launcher.setTargetPositionTolerance(1000);
             launcher.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            launcher.setVelocity(1300);
+            launcher.setVelocity(1405);
+            sleep(3000);
         }
         if (launcher.isBusy()){
-            sleep(3000);
             windmill.setPower(0.4);
             telemetry.update();
         }
@@ -206,7 +206,6 @@ public class CloseAutoBorderBlue1 extends LinearOpMode
         backLeftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         backRightMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         launcher.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        
     }
 }
     
