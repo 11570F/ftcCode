@@ -242,7 +242,7 @@ public class MainTeleop extends OpMode {
     void launch() {
         // This activates the launcher when you press X, or A
         if (gamepad1.a || gamepad2.a) {
-            launcher.setVelocity(1425);
+            launcher.setVelocity(1375);
         } else {
             launcher.setVelocity(0);
         }
