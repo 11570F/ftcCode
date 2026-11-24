@@ -83,7 +83,6 @@ public class MainTeleop extends OpMode {
      * in the launch() function to only run the windmill servo when the motor is spinning fast
      * enough to make a successful throw.
      */
-    public int LAUNCHER_TARGET_VELOCITY = 2800;
 
     // Create a variable to set to the intake.
     double intakePower;
@@ -114,13 +113,19 @@ public class MainTeleop extends OpMode {
         leftIntakeServo = hardwareMap.get(CRServoImplEx.class, "leftIntakeServo");
         rightIntakeServo = hardwareMap.get(CRServoImplEx.class, "rightIntakeServo");
         
-
+        
         /*
          * Setting zeroPowerBehavior to BRAKE enables a "brake mode". This causes the motor to
          * slow down much faster when it is coasting. This creates a much more controllable
          * drivetrain. As the robot stops much quicker.
          */
         intake.setZeroPowerBehavior(BRAKE);
+        frontLeftMotor.setZeroPowerBehavior(BRAKE);
+        backLeftMotor.setZeroPowerBehavior(BRAKE);
+        frontRightMotor.setZeroPowerBehavior(BRAKE);
+        backLeftMotor.setZeroPowerBehavior(BRAKE);
+
+
 
         /*
          * Here we set our launcher to the RUN_USING_ENCODER runmode.
@@ -130,6 +135,7 @@ public class MainTeleop extends OpMode {
          * through any wiring.
          */
         launcher.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        launcher.setDirection(DcMotorEx.Direction.FORWARD);
 
         //launcher.setPIDFCoefficients(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER, new PIDFCoefficients(40, 0, 0, 12.5));
 
@@ -180,7 +186,7 @@ public class MainTeleop extends OpMode {
             intake.setPower(1);
             rightIntakeServo.setPower(1);
             leftIntakeServo.setPower(-1);
-        } else {
+        } else if (gamepad1.right_trigger <= 0.1){
             intake.setPower(0);
             rightIntakeServo.setPower(0);
             leftIntakeServo.setPower(0);
@@ -198,11 +204,11 @@ public class MainTeleop extends OpMode {
 
         // This is math from GM0 to move via mecanum wheels
         double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-        double frontLeftPower  = (y + x + rx) / denominator;
-        double backLeftPower   = (y - x + rx) / denominator;
-        double frontRightPower = (y + x - rx) / denominator;
-        double backRightPower  = (y - x - rx) / denominator;
-        
+        double frontLeftPower  = (-y - x + rx) / denominator;
+        double backLeftPower   = (-y + x + rx) / denominator;
+        double frontRightPower = (-y + x - rx) / denominator;
+        double backRightPower  = (-y - x - rx) / denominator;
+    
         // Speed Modes: Right = fast / Left = slow
         if (gamepad1.right_bumper)
             {
@@ -236,15 +242,17 @@ public class MainTeleop extends OpMode {
     void launch() {
         // This activates the launcher when you press X, or A
         if (gamepad1.a || gamepad2.a) {
-            launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
-        } else {}
+            launcher.setVelocity(1425);
+        } else {
+            launcher.setVelocity(0);
+        }
 
-        // This spins the windmill when we press Circle, or B
+        // This spins the windmill when we press Circle, or B, and reverses on square, or x
         if (gamepad1.b || gamepad2.b) {
-            windmillServo.setPower(0.7);
+            windmillServo.setPower(0.16);
         }
         else if (gamepad1.x || gamepad2.x) {
-            windmillServo.setPower(-1);
+            windmillServo.setPower(-0.4);
         }
          else {
             windmillServo.setPower(0);

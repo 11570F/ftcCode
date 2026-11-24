@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.PwmControl;
 @Autonomous
 public class CloseAutoBorderBlue1 extends LinearOpMode 
 {
+    // Variable creation
     public DcMotorEx frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor, launcher;
     public CRServoImplEx windmill;
     public int launcherSpeed = 1405;
@@ -27,14 +28,16 @@ public class CloseAutoBorderBlue1 extends LinearOpMode
         launcher        = hardwareMap.get(DcMotorEx.class, "launcher");
         windmill        = hardwareMap.get(CRServoImplEx.class, "windmillServo");
         
+        // Specific widmill code for continuous rotation
         windmill.setPwmRange(new PwmControl.PwmRange(500, 2500));
         
+        // Config wheel directions (backright is weird)
         frontRightMotor.setDirection(DcMotorEx.Direction.FORWARD);
-        backRightMotor.setDirection(DcMotorEx.Direction.FORWARD);
+        backRightMotor.setDirection(DcMotorEx.Direction.REVERSE);
         frontLeftMotor.setDirection(DcMotorEx.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorEx.Direction.REVERSE);
         
-        // Make sure your ID's match your configuration
+        // Reset encoders
         backLeftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         frontLeftMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         backRightMotor.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -46,6 +49,7 @@ public class CloseAutoBorderBlue1 extends LinearOpMode
         // reverse the left side instead.
         // See the note about this earlier on this page.
         
+        // Brakes when not moving to prevent drift
         backLeftMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         backRightMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         frontLeftMotor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
@@ -55,11 +59,16 @@ public class CloseAutoBorderBlue1 extends LinearOpMode
         waitForStart(); // Begins Repeat loop
 
         if (isStopRequested()) return; // Stops the robot
-        
+        // Delay
+        sleep(10000);
         // Step 1
         distance(0,0,0,20);
-        windmill.setPower(0);
-        
+        sleep(100);
+        // Step 2
+        distance((float)-0.75,0,0,0); // leave the shooting area
+        sleep(100);
+        // Step 3
+        distance(0,(float) 3.5,0,0); // strafe into parking spot
     }
     public void distance(float forward, float strafe, float rotate, float shoot) // all measurements in inches
     {
@@ -74,10 +83,79 @@ public class CloseAutoBorderBlue1 extends LinearOpMode
         int launcherTarget;
 
         
-        if (forward > 0)
+        if (forward != 0)
         {
             leftInches  = Math.floor(forward * COUNTS_PER_INCH);
             rightInches = Math.floor(-forward * COUNTS_PER_INCH);
+            
+            frontLeftTarget  = (int) (frontLeftMotor.getCurrentPosition()  + leftInches);
+            frontRightTarget = (int) (frontRightMotor.getCurrentPosition() - rightInches);
+            backLeftTarget   = (int) (backLeftMotor.getCurrentPosition()   + leftInches);
+            backRightTarget  = (int) (backRightMotor.getCurrentPosition()  - rightInches);
+            
+            backLeftMotor.setTargetPosition(backLeftTarget);
+            backRightMotor.setTargetPosition(backRightTarget);
+            frontLeftMotor.setTargetPosition(frontLeftTarget);
+            frontRightMotor.setTargetPosition(frontRightTarget);
+            
+            backLeftMotor.setTargetPositionTolerance(30);
+            backRightMotor.setTargetPositionTolerance(30);
+            frontLeftMotor.setTargetPositionTolerance(30);
+            frontRightMotor.setTargetPositionTolerance(30);
+            
+            frontRightMotor.setPower(0.3);
+            backRightMotor.setPower(0.3);
+            frontLeftMotor.setPower(0.3);
+            backLeftMotor.setPower(0.3);
+            windmill.setPower(0);
+            launcher.setVelocity(0);
+            
+            backLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            frontLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            backRightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            frontRightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            
+            telemetry.addLine("Forward is running!");
+        }
+        
+        if (strafe != 0)
+        {
+            leftInches  = Math.floor(strafe * COUNTS_PER_INCH);
+            rightInches = Math.floor(-strafe * COUNTS_PER_INCH);
+            
+            frontLeftTarget  = (int) (frontLeftMotor.getCurrentPosition()  - leftInches);
+            frontRightTarget = (int) (frontRightMotor.getCurrentPosition() - rightInches);
+            backLeftTarget   = (int) (backLeftMotor.getCurrentPosition()   + leftInches);
+            backRightTarget  = (int) (backRightMotor.getCurrentPosition()  + rightInches);
+            
+            backLeftMotor.setTargetPosition(backLeftTarget);
+            backRightMotor.setTargetPosition(backRightTarget);
+            frontLeftMotor.setTargetPosition(frontLeftTarget);
+            frontRightMotor.setTargetPosition(frontRightTarget);
+            
+            backLeftMotor.setTargetPositionTolerance(30);
+            backRightMotor.setTargetPositionTolerance(30);
+            frontLeftMotor.setTargetPositionTolerance(30);
+            frontRightMotor.setTargetPositionTolerance(30);
+            
+            frontRightMotor.setPower(0.3);
+            backRightMotor.setPower(0.3);
+            frontLeftMotor.setPower(0.3);
+            backLeftMotor.setPower(0.3);
+            windmill.setPower(0);
+            launcher.setVelocity(0);
+            
+            backLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            frontLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            backRightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            frontRightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+            
+            telemetry.addLine("strafe is running");
+        }
+        if (rotate != 0)
+        {
+            leftInches  = Math.floor(rotate * COUNTS_PER_INCH);
+            rightInches = Math.floor(-rotate * COUNTS_PER_INCH);
             
             frontLeftTarget  = (int) (frontLeftMotor.getCurrentPosition()  + leftInches);
             frontRightTarget = (int) (frontRightMotor.getCurrentPosition() + rightInches);
@@ -89,66 +167,6 @@ public class CloseAutoBorderBlue1 extends LinearOpMode
             frontLeftMotor.setTargetPosition(frontLeftTarget);
             frontRightMotor.setTargetPosition(frontRightTarget);
             
-            frontRightMotor.setPower(0.3);
-            backRightMotor.setPower(0.3);
-            frontLeftMotor.setPower(0.3);
-            backLeftMotor.setPower(0.3);
-            
-            backLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            frontLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            backRightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            frontRightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            
-            telemetry.addLine("Forward is running!");
-        }
-        
-        if (strafe > 0)
-        {
-            leftInches  = Math.floor(strafe * COUNTS_PER_INCH);
-            rightInches = Math.floor(-strafe * COUNTS_PER_INCH);
-            
-            frontLeftTarget  = (int) (frontLeftMotor.getCurrentPosition()  + leftInches);
-            frontRightTarget = (int) (frontRightMotor.getCurrentPosition() - rightInches);
-            backLeftTarget   = (int) (backLeftMotor.getCurrentPosition()   - leftInches);
-            backRightTarget  = (int) (backRightMotor.getCurrentPosition()  + rightInches);
-            
-            backLeftMotor.setTargetPosition(backLeftTarget);
-            backRightMotor.setTargetPosition(backRightTarget);
-            frontLeftMotor.setTargetPosition(frontLeftTarget);
-            frontRightMotor.setTargetPosition(frontRightTarget);
-            
-            backLeftMotor.setTargetPositionTolerance(30);
-            backRightMotor.setTargetPositionTolerance(30);
-            frontLeftMotor.setTargetPositionTolerance(30);
-            frontRightMotor.setTargetPositionTolerance(30);
-            
-            frontRightMotor.setPower(0.3);
-            backRightMotor.setPower(0.3);
-            frontLeftMotor.setPower(0.3);
-            backLeftMotor.setPower(0.3);
-            
-            backLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            frontLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            backRightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            frontRightMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            
-            telemetry.addLine("strafe is running");
-        }
-        if (rotate > 0)
-        {
-            leftInches  = Math.floor(rotate * COUNTS_PER_INCH);
-            rightInches = Math.floor(-rotate * COUNTS_PER_INCH);
-            
-            frontLeftTarget  = (int) (frontLeftMotor.getCurrentPosition()  - leftInches);
-            frontRightTarget = (int) (frontRightMotor.getCurrentPosition() + rightInches);
-            backLeftTarget   = (int) (backLeftMotor.getCurrentPosition()   - leftInches);
-            backRightTarget  = (int) (backRightMotor.getCurrentPosition()  + rightInches);
-            
-            backLeftMotor.setTargetPosition(backLeftTarget);
-            backRightMotor.setTargetPosition(backRightTarget);
-            frontLeftMotor.setTargetPosition(frontLeftTarget);
-            frontRightMotor.setTargetPosition(frontRightTarget);
-            
             backLeftMotor.setTargetPositionTolerance(30);
             backRightMotor.setTargetPositionTolerance(30);
             frontLeftMotor.setTargetPositionTolerance(30);
@@ -158,6 +176,8 @@ public class CloseAutoBorderBlue1 extends LinearOpMode
             backRightMotor.setPower(0.3);
             frontLeftMotor.setPower(0.3);
             backLeftMotor.setPower(0.3);
+            windmill.setPower(0);
+            launcher.setVelocity(0);
             
             backLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
             frontLeftMotor.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
@@ -166,7 +186,7 @@ public class CloseAutoBorderBlue1 extends LinearOpMode
             
             telemetry.addLine("rotate is running");
         }
-        if (shoot > 0)
+        if (shoot != 0)
         {
             leftInches  = Math.floor(shoot * COUNTS_PER_INCH);
 
@@ -175,24 +195,26 @@ public class CloseAutoBorderBlue1 extends LinearOpMode
             launcher.setTargetPosition(launcherTarget);
             launcher.setTargetPositionTolerance(1000);
             launcher.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-            launcher.setVelocity(1405);
+            launcher.setVelocity(1375);
             sleep(3000);
+            windmill.setPower(0.4);
         }
         if (launcher.isBusy()){
-            windmill.setPower(0.4);
             telemetry.update();
         }
         while (opModeIsActive() && (backRightMotor.isBusy() || frontRightMotor.isBusy()) || (backLeftMotor.isBusy() || frontLeftMotor.isBusy()) || launcher.isBusy()) {
+            if (forward != 0 || rotate != 0 || strafe != 0) {
             telemetry.addData("frontLeftPos", frontLeftMotor.getCurrentPosition());
             telemetry.addData("frontRightPos", frontRightMotor.getCurrentPosition());
             telemetry.addData("backLeftPos", backLeftMotor.getCurrentPosition());
             telemetry.addData("backRightPos", backRightMotor.getCurrentPosition());
-            telemetry.addData("launcherPos", launcher.getCurrentPosition());
             telemetry.addData("backRightTarget", backRightMotor.getTargetPosition());
             telemetry.addData("frontLeftTarget", frontLeftMotor.getTargetPosition());
             telemetry.addData("frontRightTarget", frontRightMotor.getTargetPosition());
             telemetry.addData("backLeftTarget", backLeftMotor.getTargetPosition());
+            }
             telemetry.addData("launcherTarget", launcher.getTargetPosition());
+            telemetry.addData("launcherPos", launcher.getCurrentPosition());
             telemetry.update();
         }
         frontLeftMotor.setPower(0);
